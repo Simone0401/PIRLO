@@ -1,0 +1,119 @@
+:root {
+  --dark-blue:       #1b0e5a;
+  --deep-purple:     #3b1a8e;
+  --vibrant-orange:  #ff6a00;
+  --light-text:      #f0f0f0;
+  --muted-text:      rgba(240,240,240,0.7);
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  color: var(--light-text);
+  /* sfondo full-screen */
+  background: url('../images/pirlo.jpg') center/cover no-repeat fixed;
+  background-size: cover;
+  position: relative;
+}
+/* overlay blur & scuro */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: -1;
+}
+
+/* Header trasparente */
+.app-header {
+  position: fixed; top: 0; width: 100%;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+.app-header .container {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.75rem 1rem;
+}
+.app-icon {
+  width: 40px; height: 40px;
+  border-radius: 6px;
+  background: var(--light-text) url('../images/pirlo.jpg') center/cover;
+  border: 2px solid var(--light-text);
+}
+.app-title {
+  margin: 0; font-size: 1.5rem; font-weight: 600;
+  letter-spacing: 1px; color: #fff;
+}
+
+/* Spazio sotto header */
+.page-offset {
+  padding-top: 64px;
+}
+
+/* Main container */
+.main-container {
+  max-width: 680px; margin: 2rem auto 4rem;
+  padding: 2rem; background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+}
+
+/* Fieldset & legend */
+fieldset {
+  border: none; margin-top: 1.5rem; padding: 0;
+}
+legend {
+  font-size: 1.1rem; font-weight: 600;
+  color: var(--vibrant-orange); margin-bottom: .75rem;
+}
+
+/* Input-group & icons */
+.input-group-text {
+  background: rgba(255,255,255,0.1);
+  border: none; color: var(--light-text);
+  border-radius: 6px 0 0 6px;
+}
+.input-group .form-control {
+  border-radius: 0 6px 6px 0;
+  background: rgba(255,255,255,0.1);
+  color: var(--light-text);
+}
+.form-control::placeholder { color: var(--muted-text); }
+
+/* Focus */
+.form-control:focus, .input-group-text:focus {
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 0 0 0.2rem rgba(255,106,0,0.5);
+  color: var(--light-text);
+}
+
+/* Helper text */
+.form-text {
+  color: var(--muted-text); font-size: .875rem; margin-top: .25rem;
+}
+
+/* Browse group */
+.browse-group {
+  display: flex; gap: .5rem; align-items: center;
+}
+#trafficDirDisplay {
+  flex: 1; border: none; border-radius: 6px;
+  padding: .75rem; background: rgba(255,255,255,0.1);
+  color: var(--light-text);
+}
+
+/* Submit */
+.btn-primary {
+  background: var(--vibrant-orange);
+  border: none; padding: .75rem 1.5rem;
+  font-weight: 600; border-radius: 6px;
+}
+.btn-primary:hover { background: #e65a00; }
+
+/* Alerts */
+.alert {
+  background: rgba(0,0,0,0.3); border: none;
+  color: var(--light-text);
+}
+.btn-close-white { filter: invert(1); }

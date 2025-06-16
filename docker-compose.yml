@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  pirlo:
+    build: .
+    ports:
+      - "10000:5000"
+    volumes:
+      # Codice dell’app per hot-reload in sviluppo
+      - ./:/app
+      # File di configurazione persistente
+      - ../.global.env:/app/config/.global.env
+    environment:
+      # Secret key per Flask (sostituisci in produzione)
+      - SECRET_KEY=dev_secret_key
+      # Per abilitare l’auto-reload di Flask in dev (opzionale)
+      - FLASK_ENV=development
