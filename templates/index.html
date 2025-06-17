@@ -14,14 +14,15 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+  
 </head>
 <body>
   <!-- Icona PIRLO e Titolo fuori dal form -->
-  <div class="text-center py-2" style="padding-bottom: 0 !important;padding-top: 1em !important;">
-    <img src="{{ url_for('static', filename='images/pirlo.jpg') }}"
-         alt="Icona PIRLO"
-         class="form-icon">
-    <h1 class="text-light mt-1 mb-2" style="font-size:1.75rem; font-weight:600; letter-spacing:2px;">PIRLO</h1>
+  <div class="text-center pt-4">
+    <div class="title-wrapper">
+      <img src="{{ url_for('static', filename='images/pirlo_title.png') }}" alt="Pirlo art" class="title-image">
+      <h1 class="title-text">PIRLO</h1>
+    </div>
   </div>
 
   <main class="main-container">
