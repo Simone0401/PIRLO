@@ -15,7 +15,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
 # Percorso al file .global.env (nella cartella padre)
-ENV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config', '.global.env'))
+ENV_PATH = os.path.join(app.root_path, 'config', '.global.env')
+print(f"ENV_PATH:", ENV_PATH)
 
 # all’inizio del tuo handler, oppure subito dopo aver definito ENV_PATH
 if not os.path.exists(ENV_PATH):

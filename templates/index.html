@@ -211,10 +211,8 @@
       if (!display.value) {
         display.classList.add('is-invalid');
         valid = false;
-      } else if (!hidden.value) {
-        hidden.value = display.value;
       }
-
+      
       // 3) verifica complessiva
       if (!valid) {
         event.preventDefault();
