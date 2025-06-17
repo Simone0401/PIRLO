@@ -17,6 +17,7 @@ EXPOSE 5000
 # 6) Variabili d’ambiente per Flask
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_ENV=development
 
 # 7) Comando di avvio
-CMD ["flask", "run"]
+CMD ["flask", "run", "--host=0.0.0", "--reload"]

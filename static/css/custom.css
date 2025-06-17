@@ -133,14 +133,15 @@ legend {
   color: var(--muted-text); font-size: .875rem; margin-top: .25rem;
 }
 
+.form-check {
+  display: flex;
+  gap: .7rem;
+  margin-left: 0.2rem;
+}
+
 /* Browse group */
 .browse-group {
   display: flex; gap: .5rem; align-items: center;
-}
-#trafficDirDisplay {
-  flex: 1; border: none; border-radius: 6px;
-  padding: .75rem; background: rgba(255,255,255,0.1);
-  color: var(--light-text);
 }
 
 /* Submit */
@@ -157,3 +158,9 @@ legend {
   color: var(--light-text);
 }
 .btn-close-white { filter: invert(1); }
+
+#browseBtn {
+  display: flex;
+  gap: 0.2rem;
+}
+

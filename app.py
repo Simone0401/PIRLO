@@ -17,6 +17,11 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key')
 # Percorso al file .global.env (nella cartella padre)
 ENV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config', '.global.env'))
 
+# all’inizio del tuo handler, oppure subito dopo aver definito ENV_PATH
+if not os.path.exists(ENV_PATH):
+    # crea un file vuoto, mantenendo i permessi della cartella
+    open(ENV_PATH, 'a').close()
+
 # ----------------------
 # Definizione del form
 # ----------------------

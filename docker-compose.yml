@@ -9,9 +9,11 @@ services:
       # Codice dell’app per hot-reload in sviluppo
       - ./:/app
       # File di configurazione persistente
-      - ../.global.env:/app/config/.global.env
+      - ./config:/app/config
     environment:
       # Secret key per Flask (sostituisci in produzione)
       - SECRET_KEY=dev_secret_key
       # Per abilitare l’auto-reload di Flask in dev (opzionale)
       - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - FLASK_APP=app.py
