@@ -61,8 +61,8 @@ body::before {
 
 .form-icon {
   width: 72px;
-  height: auto;
-  object-fit: contain;
+  height: 72px;
+  object-fit: cover;
   border-radius: 8px;
   border: 2px solid #fff;
 }
