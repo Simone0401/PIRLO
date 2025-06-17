@@ -9,23 +9,21 @@
   <!-- Font & Icone -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-  <!-- CSS -->
+
+  <!-- Bootstrap & Flatpickr CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 </head>
 <body>
+  <!-- Icona PIRLO e Titolo fuori dal form -->
+  <div class="text-center py-2" style="padding-bottom: 0;padding-top: 1em !important;">
+    <img src="{{ url_for('static', filename='images/pirlo.jpg') }}"
+         alt="Icona PIRLO"
+         class="form-icon">
+    <h1 class="text-light mt-1 mb-2" style="font-size:1.75rem; font-weight:600; letter-spacing:2px;">PIRLO</h1>
+  </div>
 
-  <!-- HEADER -->
-  <header class="app-header">
-    <div class="container">
-      <div class="app-icon"></div>
-      <h1 class="app-title">PIRLO</h1>
-    </div>
-  </header>
-
-  <div class="page-offset"></div>
-
-  <!-- FORM -->
   <main class="main-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -70,7 +68,32 @@
       </fieldset>
 
       <!-- Info Squadra -->
-      <!-- ... (come prima) ... -->
+      <fieldset><legend>Info Squadra</legend>
+        <div class="mb-3">
+          <label class="form-label">Team #</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-people-fill"></i></span>
+            {{ form.team(class="form-control", placeholder="30") }}
+          </div>
+          <div class="form-text">Numero del tuo team.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Squadre in Gara</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-list-ol"></i></span>
+            {{ form.number_of_teams(class="form-control", placeholder="40") }}
+          </div>
+          <div class="form-text">Numero totale delle squadre.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Team Token</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+            {{ form.team_token(class="form-control", placeholder="5b1573806780...") }}
+          </div>
+          <div class="form-text">Token univoco per la tua squadra.</div>
+        </div>
+      </fieldset>
 
       <!-- Impostazioni Round -->
       <fieldset><legend>Impostazioni Round</legend>
@@ -78,12 +101,12 @@
           <label class="form-label">Inizio Round</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
-            <!-- datetime-local per data+ora -->
             <input
-              type="datetime-local"
+              type="text"
               class="form-control"
-              name="{{ form.start_round.name }}"
               id="{{ form.start_round.id }}"
+              name="{{ form.start_round.name }}"
+              placeholder="Seleziona data e ora"
               value="{{ form.start_round.data and form.start_round.data.strftime('%Y-%m-%dT%H:%M') or '' }}"
               required
             >
@@ -120,31 +143,49 @@
     </form>
   </main>
 
+  <!-- Hidden file input for Firefox support -->
+  <input type="file" id="dirInput" webkitdirectory directory multiple style="display:none;">
+
   <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
+    // Inizializza flatpickr per data+ora
+    flatpickr("#{{ form.start_round.id }}", {
+      enableTime: true,
+      time_24hr: true,
+      dateFormat: "Y-m-d\TH:i"
+    });
+
     const browseBtn = document.getElementById('browseBtn');
-    const display = document.getElementById('trafficDirDisplay');
-    const hiddenPath = document.getElementById('trafficDirPath');
+    const display  = document.getElementById('trafficDirDisplay');
+    const hidden   = document.getElementById('trafficDirPath');
+    const dirInput = document.getElementById('dirInput');
 
     browseBtn.addEventListener('click', async () => {
-      if ('showDirectoryPicker' in window) {
+      if (window.showDirectoryPicker) {
         try {
           const handle = await window.showDirectoryPicker();
           display.value = handle.name;
-          hiddenPath.value = handle.name;
+          hidden.value  = handle.name;
         } catch {}
       } else {
-        const path = prompt('Inserisci il percorso completo della cartella PCAP:');
-        if (path) {
-          display.value = path;
-          hiddenPath.value = path;
-        }
+        dirInput.click();
+      }
+    });
+
+    dirInput.addEventListener('change', () => {
+      if (dirInput.files.length) {
+        const file = dirInput.files[0];
+        const relative = file.webkitRelativePath || file.mozRelativePath || file.name;
+        const root = relative.split('/')[0];
+        display.value = root;
+        hidden.value  = root;
       }
     });
 
     document.getElementById('configForm').addEventListener('submit', e => {
-      if (!hiddenPath.value) {
+      if (!hidden.value) {
         e.preventDefault();
         alert('Devi selezionare la cartella PCAP prima di inviare.');
       }

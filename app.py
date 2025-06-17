@@ -3,7 +3,9 @@ from flask import Flask, render_template, redirect, url_for, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, BooleanField, DateTimeField
 from wtforms.validators import DataRequired, IPAddress
+from wtforms.fields import DateTimeLocalField  # invece di html5
 from dotenv import dotenv_values, set_key
+
 
 # ----------------------
 # Configurazione Flask
@@ -25,9 +27,9 @@ class ConfigForm(FlaskForm):
     team = IntegerField('Team #', validators=[DataRequired()])
     number_of_teams = IntegerField('Numero totale squadre', validators=[DataRequired()])
     team_token = StringField('Team Token', validators=[DataRequired()])
-    start_round = DateTimeField(
-        'Inizio Round (YYYY-MM-DDThh:mm±ZZ:ZZ)',
-        format="%Y-%m-%dT%H:%M%z",
+    start_round = DateTimeLocalField(
+        'Inizio Round',
+        format="%Y-%m-%dT%H:%M",
         validators=[DataRequired()]
     )
     traffic_dir_host = StringField('Cartella locale PCAP', validators=[DataRequired()])

@@ -59,6 +59,15 @@ body::before {
   border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.6);
 }
 
+.form-icon {
+  width: 72px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 2px solid #fff;
+}
+
+
 /* Fieldset & legend */
 fieldset {
   border: none; margin-top: 1.5rem; padding: 0;
