@@ -11,9 +11,12 @@ function showToast(type, message) {
     if (type === 'success') {
     icon = '✅';
     progressColor = '#28a745'; // green
-    } else {
+    } else if (type === 'danger') {
     icon = '❌';
     progressColor = '#dc3545'; // red
+    } else if (type === 'info') {
+    icon = 'ℹ️';
+    progressColor = '#17a2b8'; // blue
     }
 
     // Toast inner HTML

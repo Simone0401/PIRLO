@@ -10,6 +10,7 @@ from deployers.start_config import *
 from functools import wraps
 import logging
 from Blueprints.Containers.containers import containers_bp
+from utils.decorators import admin_only
 
 # ----------------------
 # Configurazione Flask
@@ -51,20 +52,10 @@ class ConfigForm(FlaskForm):
     training = BooleanField('Modalità training')
 
 # ----------------------
-# Wrapper per limitare l'accesso a localhost
-# ----------------------
-def local_only(f):
-    @wraps(f)
-    def wrapped(*args, **kwargs):
-        if request.remote_addr not in ('127.0.0.1', '::1'):
-            abort(403)
-        return f(*args, **kwargs)
-    return wrapped
-
-# ----------------------
 # Route principale
 # ----------------------
 @app.route('/', methods=['GET', 'POST'])
+@admin_only
 def index():
     form = ConfigForm()
     if form.validate_on_submit():
@@ -97,6 +88,7 @@ def index():
 # Route start_config
 # ----------------------
 @app.route('/apply_config', methods=['GET'])
+@admin_only
 def apply_config_route():
     '''
     Route per applicare la configurazione tramite lo script apply_all_configs.sh

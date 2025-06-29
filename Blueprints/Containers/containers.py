@@ -1,7 +1,10 @@
 # routes/containers.py
 from flask import Blueprint, render_template, jsonify, abort, request, flash
 import os, pathlib, subprocess 
-import docker, docker.errors
+import docker, docker.errors, datetime
+from typing import Optional, List, Tuple
+import logging
+from utils.decorators import admin_only
 
 DEBUG = False
 # ───────────────────────────────────────────────────────────
@@ -86,6 +89,43 @@ def compose_down(service: str, env: list = os.environ.copy()) -> int:
     return p.returncode
 
 # ───────────────────────────────────────────────────────────
+# Ritorna i log del container come lista di tuple (timestamp, contenuto)
+def get_logs_since(name: str, since: Optional[str] = None, tail: int = 200) -> List[Tuple[str, str]]:
+    """
+    Restituisce log come lista di tuple (timestamp, contenuto).
+    - `since`: timestamp ISO8601 da cui iniziare (es: '2025-06-28T13:15:00')
+    - `tail`: usato solo se `since` è None
+    """
+    c = _client.containers.get(name)
+
+    kwargs = {
+        "timestamps": True,
+        "stdout": True,
+        "stderr": True,
+    }
+    clean = None
+    if since:
+        clean = since.rstrip('Z')[:26]  # '2025-06-29T17:18:33.505436'
+        dt = datetime.datetime.fromisoformat(clean)
+        kwargs["since"] = dt.timestamp()
+    else:
+        kwargs["tail"] = tail
+
+    raw = c.logs(**kwargs).decode(errors="ignore")
+    result = []
+    for line in raw.splitlines():
+        if line.strip() == "":
+            continue
+        # Format: 2025-06-28T13:15:23.000000000Z Log content
+        parts = line.split(" ", 1)
+        if len(parts) == 2:
+            ts, content = parts
+            if not since or clean != ts.rstrip('Z')[:26]:
+                result.append((ts, content))
+    return result
+
+
+# ───────────────────────────────────────────────────────────
 # Docker Compose Build
 def compose_build(service: str, env: list = os.environ.copy()) -> int:
     """
@@ -160,6 +200,7 @@ def api_container_status(cid):
 # - Se il container esiste, lo avvia e ritorna lo stato
 # ───────────────────────────────────────────────────────────
 @containers_bp.route("/api/<cid>/start", methods=["POST"])
+@admin_only
 def api_container_start(cid):
     if cid not in PROJECTS:
         abort(404, "Servizio sconosciuto")
@@ -179,6 +220,7 @@ def api_container_start(cid):
 # - Se il container esiste, lo termina e ritorna lo stato
 # ───────────────────────────────────────────────────────────
 @containers_bp.route("/api/<cid>/stop", methods=["POST"])
+@admin_only
 def api_container_stop(cid):
     if cid not in PROJECTS:
         abort(404, "Servizio sconosciuto")
@@ -197,6 +239,7 @@ def api_container_stop(cid):
 # - Se il container esiste, lo builda e ritorna lo stato
 # ───────────────────────────────────────────────────────────
 @containers_bp.route("/api/<cid>/build", methods=["POST"])
+@admin_only
 def api_container_build(cid):
     if cid not in PROJECTS:
         abort(404, "Servizio sconosciuto")
@@ -220,3 +263,18 @@ def api_all_status():
         "tulip":     container_status("tulip"),
         "pirlo":     container_status("pirlo"),
     })
+
+# ───────────────────────────────────────────────────────────
+# 7.  Endpoint  /containers/api/<cid>/logs
+# Ritorna i log del container come JSON
+# ───────────────────────────────────────────────────────────
+@containers_bp.route("/api/<cid>/logs")
+def api_container_logs(cid):
+    try:
+        since = request.args.get("since")
+        logs = get_logs_since(cid, since)
+        return jsonify(result=0, logs=logs)  # lista di [ [timestamp, riga], ... ]
+    except docker.errors.NotFound:
+        return jsonify(results=1, error="Container non trovato"), 404
+    except Exception as e:
+        return jsonify(result=1, error=str(e)), 500

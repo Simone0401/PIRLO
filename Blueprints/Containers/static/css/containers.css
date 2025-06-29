@@ -57,3 +57,34 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+/* Stile per il log terminals */
+.log-terminal {
+    display: none; 
+    max-height: 200px; 
+    overflow-y: auto;
+    font-family: monospace; 
+    font-size: 0.8rem; 
+    white-space: pre-wrap;
+}
+/* Stile per logo buttone home */
+.home-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #0d6efd;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    font-size: 1.5rem;
+    z-index: 1000;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.home-btn:hover {
+    background-color: #0b5ed7;
+}

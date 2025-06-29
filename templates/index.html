@@ -33,6 +33,19 @@
     <form id="configForm" method="POST" novalidate class="needs-validation">
       {{ form.hidden_tag() }}
 
+      <div class="d-flex">
+        <div class="mb-3 text-start me-2">
+          <a href="{{ url_for('containers.view_containers') }}" class="btn btn-primary p-2">
+        <i class="bi bi-window-dash"></i> Dashboard
+          </a>
+        </div>
+        <div class="mb-3 text-start me-2">
+          <a href="{{ url_for('apply_config_route') }}" class="btn btn-success p-2" style="height: 95% !important;">
+        <i class="bi bi-bookmark-check-fill"></i> Applica le modifiche
+          </a>
+        </div>
+      </div>
+
       <!-- Connessione VM -->
       <fieldset><legend>Connessione VM</legend>
         <div class="mb-3">

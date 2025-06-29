@@ -45,10 +45,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (action === "logs") {
-        showLogsModal(container, data.logs || "");  // definisci showLogsModal() se vuoi
+        const box = document.getElementById(`${container}-log`);
+        if (box?.style.display === "block") {
+          box.style.display = "none";
+        } else {
+          await loadLogs(container);
+        }
       } else {
         showToast("success", `${action.toUpperCase()} su ${container}`);
-      }
+        clearLogs(container);
+      }  
 
     } catch (err) {
       console.error(err);
