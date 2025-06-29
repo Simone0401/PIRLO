@@ -10,12 +10,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- Bootstrap & Flatpickr CSS -->
+  <!-- Bootstrap & Flatpickr CSS & Toast CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+
 </head>
+
 <body>
+  <div class="toast-container"></div>
+
   <!-- Icona PIRLO e Titolo -->
   <div class="text-center pt-4">
     <div class="title-wrapper">
@@ -25,17 +30,6 @@
   </div>
 
   <main class="main-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for cat,msg in messages %}
-          <div class="alert alert-{{cat}} alert-dismissible fade show" role="alert">
-            {{ msg }}
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
     <form id="configForm" method="POST" novalidate class="needs-validation">
       {{ form.hidden_tag() }}
 
@@ -45,8 +39,8 @@
           <label for="{{ form.vm_ip.id }}" class="form-label">VM IP</label>
           <div class="input-group has-validation">
             <span class="input-group-text"><i class="bi bi-hdd-network"></i></span>
-            {{ form.vm_ip(class="form-control", placeholder="10.60.30.1", required=True, pattern="^(?:\\d{1,3}\\.){3}\\d{1,3}$") }}
-            <div class="invalid-feedback">Inserisci un indirizzo IPv4 valido (es. 10.60.30.1).</div>
+            {{ form.vm_ip(class="form-control", placeholder="10.60.30.1", required=True, pattern="^(?:(?:\d{1,3}\.){3}\d{1,3}|[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?)*\.?)$") }}
+            <div class="invalid-feedback">Inserisci un indirizzo IPv4 valido (es. 10.60.30.1) oppure un nome di dominio (example.com).</div>
           </div>
           <div class="form-text">Indirizzo IP della VM.</div>
         </div>
@@ -64,6 +58,10 @@
           <div class="input-group has-validation">
             <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
             {{ form.vm_password(type="password", class="form-control", placeholder="password o percorso chiave", required=True) }}
+              <!-- Occhio visibile -->
+              <span class="input-group-text" id="toggle-password" style="cursor: pointer;">
+                <i class="bi bi-eye-fill"></i>
+              </span>
             <div class="invalid-feedback">Inserisci la password o il percorso della chiave SSH.</div>
           </div>
           <div class="form-text">Password o percorso della chiave SSH.</div>
@@ -144,9 +142,24 @@
     </form>
   </main>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <script>
+          // Appena caricato, mostro il toast
+          document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ category }}', '{{ message|tojson }}');
+          });
+        </script>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <!-- Javascript Toast -->
+  <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
   <script>
 
     // Ottieni il form
@@ -224,6 +237,28 @@
     dateInput.addEventListener('input', () => {
       if (dateInput.value) dateInput.classList.remove('is-invalid');
     });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const eye = document.getElementById("toggle-password");
+    const input = document.getElementById("{{ form.vm_password.id }}");
+
+    eye.addEventListener("mousedown", function () {
+      input.type = "text";
+      eye.querySelector("i").classList.replace("bi-eye-fill", "bi-eye-slash-fill");
+    });
+
+    eye.addEventListener("mouseup", function () {
+      input.type = "password";
+      eye.querySelector("i").classList.replace("bi-eye-slash-fill", "bi-eye-fill");
+    });
+
+    eye.addEventListener("mouseleave", function () {
+      input.type = "password";
+      eye.querySelector("i").classList.replace("bi-eye-slash-fill", "bi-eye-fill");
+    });
+
+  });
+
   </script>
 </body>
 </html>

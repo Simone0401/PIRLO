@@ -1,22 +1,31 @@
 import os
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request, abort, Blueprint
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, BooleanField, DateTimeField
-from wtforms.validators import DataRequired, IPAddress
+from wtforms.validators import DataRequired
+from validators import *  # importa la funzione personalizzata
 from wtforms.fields import DateTimeLocalField  # invece di html5
 from dotenv import dotenv_values, set_key
-
+from deployers.start_config import * 
+from functools import wraps
+import logging
+from Blueprints.Containers.containers import containers_bp
 
 # ----------------------
 # Configurazione Flask
 # ----------------------
 app = Flask(__name__)
+
+# Guarda Blueprints/Containers/containers.py per la definizione del Blueprint e delle route relative ai container
+# Registra il Blueprint per le route dei container
+app.register_blueprint(containers_bp, url_prefix='/containers')
+
 # Prende la SECRET_KEY dall'env (docker-compose) oppure usa un valore di default (cambia in produzione!)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
 # Percorso al file .global.env (nella cartella padre)
-ENV_PATH = os.path.join(app.root_path, 'config', '.global.env')
-print(f"ENV_PATH:", ENV_PATH)
+ENV_PATH = os.path.join('/', 'host', '.global.env')
+logging.info(f"ENV_PATH: %s", ENV_PATH)
 
 # all’inizio del tuo handler, oppure subito dopo aver definito ENV_PATH
 if not os.path.exists(ENV_PATH):
@@ -27,7 +36,7 @@ if not os.path.exists(ENV_PATH):
 # Definizione del form
 # ----------------------
 class ConfigForm(FlaskForm):
-    vm_ip = StringField('VM IP', validators=[DataRequired(), IPAddress()])
+    vm_ip = StringField('VM Address', validators=[DataRequired(),IPOrHostname()])
     vm_password = PasswordField('VM Password', validators=[DataRequired()])
     vm_port = IntegerField('VM Port', validators=[DataRequired()])
     team = IntegerField('Team #', validators=[DataRequired()])
@@ -40,6 +49,17 @@ class ConfigForm(FlaskForm):
     )
     traffic_dir_host = StringField('Cartella locale PCAP', validators=[DataRequired()])
     training = BooleanField('Modalità training')
+
+# ----------------------
+# Wrapper per limitare l'accesso a localhost
+# ----------------------
+def local_only(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        if request.remote_addr not in ('127.0.0.1', '::1'):
+            abort(403)
+        return f(*args, **kwargs)
+    return wrapped
 
 # ----------------------
 # Route principale
@@ -65,9 +85,29 @@ def index():
             set_key(ENV_PATH, key, val)
 
         flash('Configurazione salvata con successo in .global.env', 'success')
+        
+        # Avvia il deployer appropriato
+        apply_config_route()
+
         return redirect(url_for('index'))
 
     return render_template('index.html', form=form)
+
+# ----------------------
+# Route start_config
+# ----------------------
+@app.route('/apply_config', methods=['GET'])
+def apply_config_route():
+    '''
+    Route per applicare la configurazione tramite lo script apply_all_configs.sh
+    '''
+    returned_value = apply_config()
+    if returned_value.returncode != 0:
+        flash(f"Errore durante l'applicazione della configurazione: {returned_value.stdout}", 'danger')
+    else:
+        flash("Configurazione applicata correttamente!", 'success')
+
+    return redirect(url_for('index'))
 
 # ----------------------
 # Avvio dell'app

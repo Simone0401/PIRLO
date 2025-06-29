@@ -1,0 +1,59 @@
+/* Ritocchi specifici per la dashboard container */
+.container-card {
+    background: rgba(255,255,255,.05);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    color: var(--light-text);
+}
+.container-card .card-title { font-weight: 600; }
+.container-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--light-text);
+}
+.status-badge {
+    font-size: .75rem;
+}
+/* pallino di stato pulsante */
+.status-badge {
+    position: relative;
+    padding-left: 1.2rem;            /* spazio per il dot */
+}
+.status-badge::before {
+    content: "";
+    position: absolute;
+    left: .4rem;
+    top: 50%;
+    width: .45rem;
+    height: .45rem;
+    border-radius: 50%;
+    background: currentColor;        /* eredita il colore del badge */
+    transform: translateY(-50%) scale(1);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%, 100% { transform: translateY(-50%) scale(1); opacity: 1; }
+    50%      { transform: translateY(-50%) scale(1.4); opacity: .4; }
+}
+/* Stile per spinner caricamento */
+.container-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+.spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255,255,255,.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
