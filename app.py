@@ -3,11 +3,10 @@ from flask import Flask, render_template, redirect, url_for, flash, request, abo
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, BooleanField, DateTimeField
 from wtforms.validators import DataRequired
-from validators import *  # importa la funzione personalizzata
+from utils.validators import *  # importa la funzione personalizzata
 from wtforms.fields import DateTimeLocalField  # invece di html5
 from dotenv import dotenv_values, set_key
 from deployers.start_config import * 
-from functools import wraps
 import logging
 from Blueprints.Containers.containers import containers_bp
 from utils.decorators import admin_only
