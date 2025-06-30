@@ -61,6 +61,7 @@
 .log-terminal {
     display: none; 
     max-height: 200px; 
+    min-height: 30rem;
     overflow-y: auto;
     font-family: monospace; 
     font-size: 0.8rem; 

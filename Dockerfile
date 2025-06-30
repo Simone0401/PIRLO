@@ -10,6 +10,8 @@ RUN apt-get update \
        curl \
        jq \
        docker.io \
+       openssh-client \
+       sshpass \
     && rm -rf /var/lib/apt/lists/*
 
 # Create the directory where the Docker Compose plugin will be installed and install Docker Compose V2.

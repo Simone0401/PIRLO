@@ -28,10 +28,10 @@
     </div>
   </div>
 
-  <main class="container py-5">
-    <div class="row g-4">
+  <main class="container py-3">
+    <div class="row g-4 col-12 col-lg-10 justify-content-center mx-auto">
       {% for c in containers %}
-      <div class="col-12 col-md-6">
+      <div class="col-12">
         <div class="card container-card h-100 shadow-lg">
           <div class="card-body d-flex flex-column">
             <!-- header riquadro -->
@@ -40,8 +40,14 @@
               <div class="flex-grow-1">
                 <h5 class="card-title mb-0 d-flex align-items-center gap-2" id="{{ c.id }}-title">
                   {{ c.name }}
+                  {% if c.id == 'tulip' %}
+                  <button class="btn btn-outline-info btn-sm rounded-circle" style="min-width: 0; padding: .25rem .45rem; font-size: .75rem;" data-container="{{ c.id }}"
+                      data-action="setup" data-bs-toggle="tooltip" data-bs-placement="top" title="Set up Tulip config (Needs Cannavaro first)">
+                    <i class="bi bi-gear-fill"></i>
+                  </button>
+                  {% endif %}
                 </h5>
-                <a href="{{ c.url }}" class="link-light small" target="_blank">Visita servizio</a>
+                <a href="{{ c.url }}" class="link-light small" target="_blank">{{ c.url }}</a>
               </div>
               <span class="badge bg-secondary status-badge" id="{{ c.id }}-status">Unknown</span>
             </div>

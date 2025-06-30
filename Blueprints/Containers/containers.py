@@ -19,7 +19,7 @@ PROJECTS = {
     "cannavaro": "/host/CANNAVARO-2.0",
     "totti":     "/host/TOTTI-2.0",
     "tulip":     "/host/TULIP",
-    "pirlo":     "host/PIRLO",
+    "pirlo":     "/host/PIRLO",
 }
 
 # ───────────────────────────────────────────────────────────
@@ -272,9 +272,38 @@ def api_all_status():
 def api_container_logs(cid):
     try:
         since = request.args.get("since")
+        if cid == "tulip":
+            cid = "tulip-assembler-1"
         logs = get_logs_since(cid, since)
         return jsonify(result=0, logs=logs)  # lista di [ [timestamp, riga], ... ]
     except docker.errors.NotFound:
         return jsonify(results=1, error="Container non trovato"), 404
     except Exception as e:
         return jsonify(result=1, error=str(e)), 500
+    
+# ───────────────────────────────────────────────────────────
+# 8.  Endpoint  /containers/api/tulip/setup
+# Esegue il setup di TULIP
+# ───────────────────────────────────────────────────────────
+@containers_bp.route("/api/tulip/setup", methods=["POST"])
+@admin_only
+def api_tulip_setup():
+    try:
+        project_dir = pathlib.Path(PROJECTS["tulip"])
+        setup_script = project_dir / "setup.sh"
+        if not setup_script.exists():
+            return jsonify(result=1, error="Setup script non trovato"), 404
+        
+        cmd = ["bash", str(setup_script)]
+        p = subprocess.run(cmd, check=True, cwd=project_dir,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        if DEBUG:
+            print(f"Comando eseguito: {' '.join(cmd)}")
+            print(f"Output: {p.stdout.decode()}")
+            print(f"Errori: {p.stderr.decode()}")
+        
+        return jsonify(result=0, output=p.stdout.decode())
+    except Exception as e:
+        return jsonify(result=1, error=str(e)), 500
+    

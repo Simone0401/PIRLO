@@ -12,11 +12,12 @@ services:
       # File di configurazione persistente
       - ../.global.env:/app/config/.global.env
       - ../:/host
-      - empty_volume:/host/PIRLO
       - /tmp/vm_pcaps/:/tmp/vm_pcaps/
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
+      - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub:ro
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
     environment:
+      - TZ=Europe/Rome
       # Secret key per Flask (sostituisci in produzione)
       - SECRET_KEY=dev_secret_key
       # Per abilitare l’auto-reload di Flask in dev (opzionale)

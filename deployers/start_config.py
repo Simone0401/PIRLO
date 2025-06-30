@@ -1,4 +1,3 @@
-from pathlib import Path
 import subprocess
 
 APPLY_CONFIGS_FILE = "/host/apply_all_configs.sh"

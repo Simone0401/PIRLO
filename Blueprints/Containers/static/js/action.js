@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       console.error(err);
-      showToast("danger", `❌ Network error: ${err}`);
+      showToast("danger", `Network error: ${err}`);
     } finally {
       hideSpinner(container);
       disableButtons(container, false);

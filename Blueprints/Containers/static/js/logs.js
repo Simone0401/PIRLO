@@ -64,6 +64,10 @@ async function loadLogs(id) {
     const newEntries = data.logs || [];
     if (newEntries.length > 0) {
       logBuffer[id].push(...newEntries);
+      const MAX_LOG_ITEMS = 3000; // adjust max size as needed
+      if (logBuffer[id].length > MAX_LOG_ITEMS) {
+        logBuffer[id] = logBuffer[id].slice(-MAX_LOG_ITEMS);
+      }
       lastTimestamp[id] = newEntries[newEntries.length - 1][0];
     }
 
