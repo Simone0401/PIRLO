@@ -5,6 +5,8 @@ import docker, docker.errors, datetime
 from typing import Optional, List, Tuple
 import logging
 from utils.decorators import admin_only
+from datetime import datetime
+from datetime import timezone
 
 DEBUG = False
 # ───────────────────────────────────────────────────────────
@@ -104,10 +106,13 @@ def get_logs_since(name: str, since: Optional[str] = None, tail: int = 200) -> L
         "stderr": True,
     }
     clean = None
+
     if since:
         clean = since.rstrip('Z')[:26]  # '2025-06-29T17:18:33.505436'
-        dt = datetime.datetime.fromisoformat(clean)
+        dt = datetime.fromisoformat(clean).replace(tzinfo=timezone.utc)
+
         kwargs["since"] = dt.timestamp()
+
     else:
         kwargs["tail"] = tail
 
@@ -299,11 +304,15 @@ def api_tulip_setup():
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         if DEBUG:
-            print(f"Comando eseguito: {' '.join(cmd)}")
-            print(f"Output: {p.stdout.decode()}")
-            print(f"Errori: {p.stderr.decode()}")
+            logging.info(f"Comando eseguito: {' '.join(cmd)}")
+            logging.info(f"Output: {p.stdout.decode()}")
+            logging.info(f"Errori: {p.stderr.decode()}")
         
         return jsonify(result=0, output=p.stdout.decode())
     except Exception as e:
+        if DEBUG:
+            logging.error(f"Comando eseguito: {' '.join(cmd)}")
+            logging.error(f"Output: {p.stdout.decode()}")
+            logging.error(f"Errori: {p.stderr.decode()}")
         return jsonify(result=1, error=str(e)), 500
     

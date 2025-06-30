@@ -6,6 +6,7 @@ find_ip_by_pattern() {
   for iface in $(ifconfig -l | tr ' ' '\n' | grep "^${pattern}"); do
     ip=$(ifconfig "$iface" 2>/dev/null | awk '/inet / {print $2; exit}')
     if [[ -n "$ip" ]]; then
+      echo "$ip"
       return 0
     fi
   done
